@@ -1,0 +1,33 @@
+/* src/styles/global.css */
+@import './variables.css';
+@import './fonts.css';
+@import './reset.css';
+
+/* Reset de base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--ff-sans);
+  color: var(--color-primary-dark-500);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ff-serif);
+  line-height: 1.2;
+}
+
+img, picture, svg {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+    transition: color 0.4s ease-in-out,
+                background-color 0.15s ease-in-out,
+                border-color 0.15s ease-in-out;
+  }

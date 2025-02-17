@@ -1,0 +1,93 @@
+---
+// src/pages/item/[id].astro
+import Layout from '../../layouts/Layout.astro';
+import { api } from '../../lib/api';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+let item;
+let parentCollection;
+
+try {
+    // Récupération des données de l'item
+    item = await api.getItem(id);
+    
+    // Récupération de la collection parente si elle existe
+    // Les items peuvent être dans plusieurs collections, donc on a un tableau
+    const itemSetIds = item['o:item_set'] ? 
+        item['o:item_set'].map(set => set['o:id']) : [];
+        
+    if (itemSetIds.length > 0) {
+        parentCollection = await api.getCollection(itemSetIds[0]); // On prend la première collection
+    }
+    
+    console.log('Item Data:', { item, parentCollection }); // Pour debug
+    
+} catch (error) {
+    console.error('Error loading item:', error);
+}
+---
+
+<Layout title={item?.['o:title'] || 'Item'}>
+    {/* Navigation */}
+    <nav class="item-breadcrumb">
+        {parentCollection && (
+            <a href={`/collection/${parentCollection['o:id']}`}>
+                {parentCollection['o:title']}
+            </a>
+        )}
+        <span> > </span>
+        <span>{item?.['o:title']}</span>
+    </nav>
+
+    <article class="item-details">
+        {/* Image principale */}
+        {item?.['thumbnail_display_urls'] && (
+            <div class="item-media">
+                <img 
+                    src={item['thumbnail_display_urls']['large']} 
+                    alt={item['o:title']}
+                />
+            </div>
+        )}
+
+        {/* Métadonnées */}
+        <div class="item-metadata">
+            <h1>{item?.['o:title']}</h1>
+            
+            {/* Description Dublin Core si elle existe */}
+            {item?.['dcterms:description']?.[0]?.['@value'] && (
+                <div class="description">
+                    <h2>Description</h2>
+                    <p>{item['dcterms:description'][0]['@value']}</p>
+                </div>
+            )}
+
+            {/* Autres métadonnées Dublin Core */}
+            <div class="metadata-grid">
+                {item?.['dcterms:date']?.[0]?.['@value'] && (
+                    <div class="metadata-item">
+                        <h3>Date</h3>
+                        <p>{item['dcterms:date'][0]['@value']}</p>
+                    </div>
+                )}
+                
+                {item?.['dcterms:creator']?.[0]?.['@value'] && (
+                    <div class="metadata-item">
+                        <h3>Créateur</h3>
+                        <p>{item['dcterms:creator'][0]['@value']}</p>
+                    </div>
+                )}
+                
+                {item?.['dcterms:identifier']?.[0]?.['@value'] && (
+                    <div class="metadata-item">
+                        <h3>Identifiant</h3>
+                        <p>{item['dcterms:identifier'][0]['@value']}</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    </article>
+</Layout>

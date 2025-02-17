@@ -1,0 +1,66 @@
+:root {
+    /* Couleurs principales - Tons sombres */
+    --color-primary-dark-500: #292A29;
+    --color-primary-dark-400: #3E3F3E;
+    --color-primary-dark-300: #535453;
+    --color-primary-dark-200: #696969;
+    --color-primary-dark-100: #7E7F7E;
+  
+    /* Couleurs principales - Tons dorés */
+    --color-primary-gold-500: #D1BB7E;
+    --color-primary-gold-400: #D5C18A;
+    --color-primary-gold-300: #DAC897;
+    --color-primary-gold-200: #DECFA4;
+    --color-primary-gold-100: #e3d5b0;
+  
+    /* Couleurs principales - Tons crème */
+    --color-primary-cream-500: #EEEAE0;
+    --color-primary-cream-400: #EFECE3;
+    --color-primary-cream-300: #F1EEE6;
+    --color-primary-cream-200: #F6F4EF;
+    --color-primary-cream-100: #F9F8F5;
+  
+    /* Couleurs principales - Tons menthe */
+    --color-primary-mint-500: #E5ECE3;
+    --color-primary-mint-400: #E7EDE5;
+    --color-primary-mint-300: #ECF1EB;
+    --color-primary-mint-200: #F2F5F1;
+    --color-primary-mint-100: #F7F9F6;
+  
+    /* Couleurs secondaires - Tons gris */
+    --color-secondary-gray-500: #6A6868;
+    --color-secondary-gray-400: #787777;
+    --color-secondary-gray-300: #878686;
+    --color-secondary-gray-200: #969595;
+    --color-secondary-gray-100: #A5A4A4;
+  
+    /* Couleurs secondaires - Tons argentés */
+    --color-secondary-silver-500: #D0D8DD;
+    --color-secondary-silver-400: #D4DBE0;
+    --color-secondary-silver-300: #D9DFE3;
+    --color-secondary-silver-200: #DEE3E7;
+    --color-secondary-silver-100: #E2E7EA;
+  
+    /* Couleurs secondaires - Tons rosés */
+    --color-secondary-rose-500: #D2BDBA;
+    --color-secondary-rose-400: #D6C3C0;
+    --color-secondary-rose-300: #DBCAC7;
+    --color-secondary-rose-200: #DFD0CE;
+    --color-secondary-rose-100: #E4D7D5;
+  
+    /* Fonts
+    /* Vérifier la présence des polices dans fonts.css */
+    --ff-sans: "Luciole", sans-serif;
+    --ff-serif: "FRL", serif;
+    --fw-regular: 400;
+    --fw-semi-bold: 800;
+    --fw-bold: 900;
+  
+    --fs-300: 0.875rem;
+    --fs-400: 1rem;
+    --fs-500: 1.25rem;
+    --fs-600: 1.5rem;
+    --fs-700: 2rem;
+    --fs-800: 2.5rem;
+    --fs-900: 3rem;
+}

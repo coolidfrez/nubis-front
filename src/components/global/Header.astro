@@ -1,0 +1,106 @@
+---
+// Header.astro
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+const navigationItems: NavItem[] = [
+  { href: '/collections', label: 'Collections' },
+  { href: '/expositions', label: 'Expositions' },
+  { href: '/a-propos', label: 'À propos' },
+  { href: '/contact', label: 'Contact' }
+];
+---
+
+<div class="nubis-header">
+  <div class="nubis-header__content">
+    <a class="nubis-header__logo-link" href="/">
+      <img src="/images/logo-nubis.png" alt="Logo Nubis" class="nubis-header__logo">
+    </a>
+
+    <nav aria-label="Navigation principale" class="nubis-header__nav">
+      <ul role="list" class="nubis-header__nav-list">
+        {navigationItems.map(item => (
+          <li class="nubis-header__nav-item">
+            <a 
+              href={item.href}
+              class="nubis-header__nav-link"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<style>
+  .nubis-header {
+    width: 100%;
+    background-color: var(--color-primary-cream-100);
+    border-bottom: 1px solid var(--color-primary-cream-300);
+    padding: 1rem 0;
+  }
+
+  .nubis-header__content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nubis-header__logo-link {
+    display: block;
+  }
+
+  .nubis-header__logo {
+    height: 50px;
+    width: auto;
+  }
+
+  .nubis-header__nav {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .nubis-header__nav-list {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nubis-header__nav-link {
+    color: var(--color-primary-dark-500);
+    text-decoration: none;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-400);
+    font-weight: var(--fw-semi-bold);
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+  }
+
+  .nubis-header__nav-link:hover {
+    color: var(--color-primary-gold-500);
+  }
+
+  @media (max-width: 768px) {
+    .nubis-header__content {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .nubis-header__nav-list {
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>

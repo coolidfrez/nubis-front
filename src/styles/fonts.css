@@ -1,0 +1,21 @@
+/* Webfont: Luciole-Regular */
+@font-face {
+    font-family: 'Luciole';
+    src: url('/fonts/Luciole_webfonts/Luciole-Regular/Luciole-Regular.eot');
+    src: url('/fonts/Luciole_webfonts/Luciole-Regular/Luciole-Regular.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/Luciole_webfonts/Luciole-Regular/Luciole-Regular.woff') format('woff'),
+         url('/fonts/Luciole_webfonts/Luciole-Regular/Luciole-Regular.ttf') format('truetype'),
+         url('/fonts/Luciole_webfonts/Luciole-Regular/Luciole-Regular.svg#Luciole-Regular') format('svg');
+    font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+
+/* Webfont: Frank-Ruhl-Libre */
+@font-face {
+    font-family: 'FRL';
+    src: url('/fonts/Frank_Ruhl_Libre/static/FrankRuhlLibre-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}

@@ -1,0 +1,161 @@
+---
+// src/components/home/FeaturedCollections.astro
+import { getFeaturedCollections } from '../../lib/api';
+
+const featuredCollections = await getFeaturedCollections();
+const defaultImage = featuredCollections[0]?.thumbnail_display_urls?.large || '';
+---
+
+<section class="featured-section" data-bg-image={defaultImage} id="featured">
+    <div class="content-wrapper">
+        <div class="title-box">
+            <h2 class="main-title">
+                Explorer
+                <span class="sub-title">les collections</span>
+            </h2>
+
+            <nav class="collections-nav" aria-label="Collections en vedette">
+                <ul>
+                    {featuredCollections && featuredCollections.length ? (
+                        featuredCollections.map((collection, index) => (
+                            <li>
+                                <a 
+                                    href={`/collection/${collection['o:id']}`}
+                                    class="collection-link"
+                                    aria-current={index === 0 ? "page" : undefined}
+                                    data-bg-image={collection.thumbnail_display_urls?.large || ''}
+                                >
+                                    {collection['o:title']}
+                                    {/* {collection['dcterms:description']?.[0]?.['@value'] && 
+                                        <span class="collection-description">
+                                            {collection['dcterms:description'][0]['@value']}
+                                        </span>
+                                    } */}
+                                </a>
+                            </li>
+                        ))
+                    ) : (
+                        <li class="no-collections">Aucune collection en vedette pour le moment.</li>
+                    )}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<style>
+    .featured-section {
+        position: relative;
+        min-height: 530px;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: background-image 0.3s ease-in-out;
+    }
+
+    .content-wrapper {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 6rem 2rem 4rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        z-index: 2;
+    }
+
+    .title-box {
+        background: var(--color-primary-cream-100, #fff);
+        padding: 2rem;
+        display: inline-block;
+        max-width: 700px;
+    }
+
+    .main-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        margin-bottom: 2rem;
+    }
+
+    .sub-title {
+        display: block;
+        padding-left: 3.5rem;
+        color: var(--color-primary-gold-500, #8b7355);
+        font-size: 2rem;
+        font-style: italic;
+    }
+
+    .collections-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+    }
+
+    .collection-link {
+        color: var(--color-primary-dark-500, #333);
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .collection-link:hover {
+        color: var(--color-primary-gold-500, #8b7355);
+    }
+
+    .collection-description {
+        display: block;
+        font-size: 0.9em;
+        margin-top: 0.5rem;
+        opacity: 0.8;
+    }
+
+    .no-collections {
+        font-style: italic;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .title-box {
+            max-width: 100%;
+        }
+        
+        .main-title {
+            font-size: 2rem;
+        }
+
+        .sub-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    const section = document.getElementById('featured');
+    const links = document.querySelectorAll('.collection-link');
+
+    if (section) {
+        const bgImage = section.getAttribute('data-bg-image');
+        if (bgImage) {
+            section.style.backgroundImage = `url('${bgImage}')`;
+        }
+    }
+
+    links.forEach(link => {
+        link.addEventListener('mouseover', () => {
+            const bgImage = link.getAttribute('data-bg-image');
+            if (bgImage && section) {
+                section.style.backgroundImage = `url('${bgImage}')`;
+            }
+        });
+
+        link.addEventListener('focus', () => {
+            const bgImage = link.getAttribute('data-bg-image');
+            if (bgImage && section) {
+                section.style.backgroundImage = `url('${bgImage}')`;
+            }
+        });
+    });
+</script>
