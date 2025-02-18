@@ -6,88 +6,117 @@ import { api } from '../../lib/api';
 export const prerender = false;
 
 const { id } = Astro.params;
-
 let item;
-let parentCollection;
+const manifestUrl = `https://nubis.bis-sorbonne.fr/iiif/3/${id}/manifest`;
 
 try {
-    // Récupération des données de l'item
     item = await api.getItem(id);
-    
-    // Récupération de la collection parente si elle existe
-    // Les items peuvent être dans plusieurs collections, donc on a un tableau
-    const itemSetIds = item['o:item_set'] ? 
-        item['o:item_set'].map(set => set['o:id']) : [];
-        
-    if (itemSetIds.length > 0) {
-        parentCollection = await api.getCollection(itemSetIds[0]); // On prend la première collection
-    }
-    
-    console.log('Item Data:', { item, parentCollection }); // Pour debug
-    
 } catch (error) {
     console.error('Error loading item:', error);
 }
 ---
 
 <Layout title={item?.['o:title'] || 'Item'}>
-    {/* Navigation */}
-    <nav class="item-breadcrumb">
-        {parentCollection && (
-            <a href={`/collection/${parentCollection['o:id']}`}>
-                {parentCollection['o:title']}
-            </a>
-        )}
-        <span> > </span>
-        <span>{item?.['o:title']}</span>
-    </nav>
-
-    <article class="item-details">
-        {/* Image principale */}
-        {item?.['thumbnail_display_urls'] && (
-            <div class="item-media">
-                <img 
-                    src={item['thumbnail_display_urls']['large']} 
-                    alt={item['o:title']}
-                />
-            </div>
-        )}
-
-        {/* Métadonnées */}
-        <div class="item-metadata">
-            <h1>{item?.['o:title']}</h1>
-            
-            {/* Description Dublin Core si elle existe */}
-            {item?.['dcterms:description']?.[0]?.['@value'] && (
-                <div class="description">
-                    <h2>Description</h2>
-                    <p>{item['dcterms:description'][0]['@value']}</p>
+    <div class="item-container">
+        <h1>{item?.['o:title']}</h1>
+        
+        <div class="item-content">
+            <div class="viewer-side">
+                <div class="mirador-wrapper">
+                    <div id="mirador"></div>
                 </div>
-            )}
+            </div>
 
-            {/* Autres métadonnées Dublin Core */}
-            <div class="metadata-grid">
+            <div class="metadata-side">
+                {item?.['dcterms:description']?.[0]?.['@value'] && (
+                    <div class="metadata-section">
+                        <h2>Description</h2>
+                        <p>{item['dcterms:description'][0]['@value']}</p>
+                    </div>
+                )}
+                
                 {item?.['dcterms:date']?.[0]?.['@value'] && (
-                    <div class="metadata-item">
-                        <h3>Date</h3>
+                    <div class="metadata-section">
+                        <h2>Date</h2>
                         <p>{item['dcterms:date'][0]['@value']}</p>
                     </div>
                 )}
-                
-                {item?.['dcterms:creator']?.[0]?.['@value'] && (
-                    <div class="metadata-item">
-                        <h3>Créateur</h3>
-                        <p>{item['dcterms:creator'][0]['@value']}</p>
-                    </div>
-                )}
-                
-                {item?.['dcterms:identifier']?.[0]?.['@value'] && (
-                    <div class="metadata-item">
-                        <h3>Identifiant</h3>
-                        <p>{item['dcterms:identifier'][0]['@value']}</p>
+
+                {item?.['dcterms:source']?.[0]?.['@value'] && (
+                    <div class="metadata-section">
+                        <h2>Source</h2>
+                        <p>{item['dcterms:source'][0]['@value']}</p>
                     </div>
                 )}
             </div>
         </div>
-    </article>
+    </div>
 </Layout>
+
+<style>
+    .item-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .item-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .viewer-side {
+        width: 100%;
+    }
+
+    .mirador-wrapper {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .metadata-side {
+        padding: 1rem;
+    }
+
+    .metadata-section {
+        margin-bottom: 2rem;
+    }
+
+    .metadata-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 1024px) {
+        .item-content {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script>
+<script define:vars={{ manifestUrl }}>
+    window.addEventListener('load', () => {
+        if (typeof Mirador !== 'undefined') {
+            const miradorInstance = Mirador.viewer({
+                id: 'mirador',
+                windows: [{
+                    manifestId: manifestUrl,
+                    view: 'single',
+                    thumbnailNavigationPosition: 'far-bottom'
+                }],
+                window: {
+                    allowFullscreen: true,
+                    sideBarOpenByDefault: false
+                }
+            });
+        } else {
+            console.error('Mirador failed to load');
+        }
+    });
+</script>

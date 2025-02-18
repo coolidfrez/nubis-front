@@ -6,131 +6,131 @@ import { api } from '../../lib/api';
 export const prerender = false;
 
 const { id } = Astro.params;
-
-let collection;
-let items = [];
-let subCollections = [];
-let parentCollection = null;
+let data;
+let error;
 
 try {
-    collection = await api.getCollection(id);
-    items = await api.getItems({
-        'item_set_id': id
-    });
-
-    if (collection['dcterms:hasPart']) {
-        subCollections = await Promise.all(
-            collection['dcterms:hasPart'].map(async (part) => {
-                const subCollectionId = part.value_resource_id;
-                return await api.getCollection(subCollectionId);
-            })
-        );
-    }
-
-    if (collection['dcterms:isPartOf']) {
-        const parentId = collection['dcterms:isPartOf'][0].value_resource_id;
-        parentCollection = await api.getCollection(parentId);
-    }
-
-} catch (error) {
+    data = await api.getCollectionWithRelations(id);
+} catch (err) {
+    error = err;
     console.error('Error loading collection:', error);
 }
+
+const { collection, items, subCollections, parentCollection } = data || {};
 ---
 
 <Layout title={collection?.['o:title'] || 'Collection'}>
-    {/* Navigation hiérarchique */}
-    <nav class="collection-breadcrumb">
-        {parentCollection && (
-            <>
-                <a href={`/collection/${parentCollection['o:id']}`} class="parent-link">
-                    {parentCollection['thumbnail_display_urls'] && (
-                        <img 
-                            src={parentCollection['thumbnail_display_urls']['square']} 
-                            alt=""
-                            class="breadcrumb-thumbnail"
-                        />
-                    )}
-                    <span>{parentCollection['o:title']}</span>
-                </a>
-                <span class="separator"> > </span>
-            </>
-        )}
-        <span class="current">{collection?.['o:title']}</span>
-    </nav>
-
-    {/* Collection courante */}
-    <section class="current-collection">
-        <div class="collection-header">
-            {collection?.['thumbnail_display_urls'] && (
-                <div class="collection-image">
-                    <img 
-                        src={collection['thumbnail_display_urls']['large']} 
-                        alt={collection['o:title']}
-                    />
-                </div>
-            )}
-            <div class="collection-info">
-                <h1>{collection?.['o:title']}</h1>
-                {collection?.['dcterms:description']?.[0]?.['@value'] && (
-                    <div class="description">
-                        {collection['dcterms:description'][0]['@value']}
-                    </div>
-                )}
-            </div>
+    {error ? (
+        <div class="error-container">
+            <h2>Une erreur est survenue</h2>
+            <p>{error.message}</p>
         </div>
-    </section>
-
-    {/* Sous-collections si présentes */}
-    {subCollections.length > 0 && (
-        <section class="sub-collections">
-            <h2>Collections liées</h2>
-            <div class="collections-grid">
-                {subCollections.map((subColl) => (
-                    <a href={`/collection/${subColl['o:id']}`} class="collection-card">
-                        {subColl['thumbnail_display_urls'] && (
-                            <img 
-                                src={subColl['thumbnail_display_urls']['medium']} 
-                                alt=""
-                                class="collection-thumbnail"
-                            />
-                        )}
-                        <div class="collection-description">
-                            <h3>{subColl['o:title']}</h3>
-                            {subColl['dcterms:description']?.[0]?.['@value'] && (
-                                <p>{subColl['dcterms:description'][0]['@value']}</p>
+    ) : (
+        <>
+            {/* Navigation hiérarchique */}
+            <nav class="collection-breadcrumb">
+                {parentCollection && (
+                    <>
+                        <a href={`/collection/${parentCollection['o:id']}`} class="parent-link">
+                            {parentCollection['thumbnail_display_urls'] && (
+                                <img 
+                                    src={parentCollection['thumbnail_display_urls']['square']} 
+                                    alt=""
+                                    class="breadcrumb-thumbnail"
+                                />
                             )}
-                        </div>
-                    </a>
-                ))}
-            </div>
-        </section>
-    )}
+                            <span>{parentCollection['o:title']}</span>
+                        </a>
+                        <span class="separator"> > </span>
+                    </>
+                )}
+                <span class="current">{collection?.['o:title']}</span>
+            </nav>
 
-    {/* Items de la collection */}
-    {items.length > 0 && (
-        <section class="collection-items">
-            <h2>Documents de la collection</h2>
-            <div class="items-grid">
-                {items.map((item) => (
-                    <a href={`/item/${item['o:id']}`} class="item-card">
-                        {item['thumbnail_display_urls'] && (
+            {/* Collection courante */}
+            <section class="current-collection">
+                <div class="collection-header">
+                    {collection?.['thumbnail_display_urls'] && (
+                        <div class="collection-image">
                             <img 
-                                src={item['thumbnail_display_urls']['medium']} 
-                                alt=""
-                                class="item-thumbnail"
+                                src={collection['thumbnail_display_urls']['large']} 
+                                alt={collection['o:title']}
                             />
-                        )}
-                        <div class="item-info">
-                            <h3>{item['o:title']}</h3>
                         </div>
-                    </a>
-                ))}
-            </div>
-        </section>
+                    )}
+                    <div class="collection-info">
+                        <h1>{collection?.['o:title']}</h1>
+                        {collection?.['dcterms:description']?.[0]?.['@value'] && (
+                            <div class="description">
+                                {collection['dcterms:description'][0]['@value']}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* Sous-collections si présentes */}
+            {subCollections?.length > 0 && (
+                <section class="sub-collections">
+                    <h2>Collections liées</h2>
+                    <div class="collections-grid">
+                        {subCollections.map((subColl) => (
+                            <a href={`/collection/${subColl['o:id']}`} class="collection-card">
+                                {subColl['thumbnail_display_urls'] && (
+                                    <img 
+                                        src={subColl['thumbnail_display_urls']['medium']} 
+                                        alt=""
+                                        class="collection-thumbnail"
+                                    />
+                                )}
+                                <div class="collection-description">
+                                    <h3>{subColl['o:title']}</h3>
+                                    {subColl['dcterms:description']?.[0]?.['@value'] && (
+                                        <p>{subColl['dcterms:description'][0]['@value']}</p>
+                                    )}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Items de la collection */}
+            {items?.length > 0 && (
+                <section class="collection-items">
+                    <h2>Documents de la collection</h2>
+                    <div class="items-grid">
+                        {items.map((item) => (
+                            <a href={`/item/${item['o:id']}`} class="item-card">
+                                {item['thumbnail_display_urls'] && (
+                                    <img 
+                                        src={item['thumbnail_display_urls']['medium']} 
+                                        alt=""
+                                        class="item-thumbnail"
+                                    />
+                                )}
+                                <div class="item-info">
+                                    <h3>{item['o:title']}</h3>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )}
+        </>
     )}
 </Layout>
 
 <style>
+    .error-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff3f3;
+        border: 1px solid #ffcdd2;
+        border-radius: 4px;
+    }
+
     .collection-breadcrumb {
         padding: 1rem;
         display: flex;
@@ -188,15 +188,14 @@ try {
     }
 
     .collection-description p {
-    font-size: 1rem;
-    color: #666;
-    line-height: 1.5;
-    /* Limite le texte à 3 lignes */
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 
     h2 {
         margin: 2rem 0 1rem;

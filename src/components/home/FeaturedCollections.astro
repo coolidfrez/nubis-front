@@ -1,8 +1,8 @@
 ---
 // src/components/home/FeaturedCollections.astro
-import { getFeaturedCollections } from '../../lib/api';
+import { api } from '../../lib/api';
 
-const featuredCollections = await getFeaturedCollections();
+const featuredCollections = await api.getFeaturedCollections();
 const defaultImage = featuredCollections[0]?.thumbnail_display_urls?.large || '';
 ---
 
