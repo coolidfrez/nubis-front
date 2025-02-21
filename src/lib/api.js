@@ -31,7 +31,11 @@ export const api = {
     
     // Items
     getItems: (params = {}) => fetchAPI('/items', params),
-    getItem: (id) => fetchAPI(`/items/${id}`),
+    getItem: async (id) => {
+        const response = await fetchAPI(`/items/${id}`);
+        console.log('Item Response:', response); // Debug item
+        return response;
+    },
     
     // Sites
     getSites: (params = {}) => fetchAPI('/sites', params),
