@@ -1,0 +1,51 @@
+---
+// src/components/collection/CollectionBreadcrumb.astro
+const { parentCollection, collection } = Astro.props;
+---
+
+<nav class="collection-breadcrumb">
+    {parentCollection && (
+        <>
+            <a href={`/collection/${parentCollection['o:id']}`} class="parent-link">
+                {parentCollection['thumbnail_display_urls'] && (
+                    <img 
+                        src={parentCollection['thumbnail_display_urls']['square']} 
+                        alt=""
+                        class="breadcrumb-thumbnail"
+                    />
+                )}
+                <span>{parentCollection['o:title']}</span>
+            </a>
+            <span class="separator"> > </span>
+            {collection?.['o:title']}
+        </>
+    )}
+</nav>
+
+<style>
+    .collection-breadcrumb {
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .breadcrumb-thumbnail {
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .parent-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .separator {
+        color: #666;
+    }
+</style>

@@ -1,0 +1,51 @@
+---
+// Importations côté serveur
+import Layout from '../../layouts/Layout.astro';
+import { api } from '../../lib/api';
+import CollectionBreadcrumb from '../../components/collection/CollectionBreadcrumb.astro';
+import CollectionInfo from '../../components/collection/CollectionInfo.astro';
+import SubCollections from '../../components/collection/SubCollections.astro';
+// On importe les items dynamiquement coté client, vanilla JS. Une autre approche avec REACT est possible.
+import Items from '../../components/collection/Items.astro';
+
+export async function getStaticPaths() {
+    const collections = await api.getCollections({ page: 'all' });
+
+    const paths = await Promise.all(
+        collections.map(async (collection) => {
+            const subCollections = collection['dcterms:hasPart']
+                ? await Promise.all(
+                      collection['dcterms:hasPart'].map(async (part) => {
+                          return await api.getCollection(part.value_resource_id);
+                      })
+                  )
+                : [];
+
+            const parentCollection = collection['dcterms:isPartOf']
+                ? await api.getCollection(collection['dcterms:isPartOf'][0].value_resource_id)
+                : null;
+
+            return {
+                params: { id: collection['o:id'].toString() },
+                props: {
+                    collection,
+                    subCollections,
+                    parentCollection
+                }
+            };
+        })
+    );
+
+    return paths;
+}
+
+const { id } = Astro.params; // Garde l'ID pour charger dynamiquement les items
+const { collection, subCollections, parentCollection } = Astro.props; // Injecté via getStaticPaths()
+---
+
+<Layout title={collection?.['o:title'] || 'Collection'}>
+    <CollectionBreadcrumb parentCollection={parentCollection} collection={collection}/>
+    <CollectionInfo collection={collection} />
+    <SubCollections subCollections={subCollections} />
+    <Items itemSetId={collection['o:id']} />
+</Layout>

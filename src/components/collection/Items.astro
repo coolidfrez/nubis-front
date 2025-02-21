@@ -1,0 +1,269 @@
+---
+const { itemSetId } = Astro.props;
+const sortOptions = [
+    { value: 'relevance', label: 'Pertinence' },
+    { value: 'created', label: 'Date d\'ajout' },
+    { value: 'title', label: 'Titre' }
+];
+const perPageOptions = [12, 24, 48];
+---
+
+<section class="collection-items">
+    <div class="collection-header">
+        <div class="results-count" id="resultsCount">Chargement...</div>
+        <div class="collection-controls">
+            <div class="sort-control">
+                <label for="sortBy">Trier par</label>
+                <select id="sortBy" class="sort-select">
+                    {sortOptions.map(option => (
+                        <option value={option.value}>{option.label}</option>
+                    ))}
+                </select>
+            </div>
+            <div class="per-page-control">
+                <label for="perPage">Afficher par</label>
+                <select id="perPage" class="per-page-select">
+                    {perPageOptions.map(option => (
+                        <option value={option} selected={option === 24}>{option}</option>
+                    ))}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="items-grid" id="itemsGrid"></div>
+    
+    <div id="loading" class="loading">Chargement...</div>
+    <button id="loadMoreBtn" class="load-more-btn hidden">
+        Charger plus de documents
+    </button>
+</section>
+
+<script define:vars={{ itemSetId }}>
+    console.log('Script starting, itemSetId:', itemSetId);
+
+    let currentPage = 1;
+    let hasMore = true;
+    let isLoading = false;
+    let currentSort = 'relevance';
+    let itemsPerPage = 24;
+    let totalItems = 0;
+
+    function updateResultsCount(count) {
+        console.log('Updating results count:', count);
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            resultsCount.textContent = `${count} résultat${count > 1 ? 's' : ''}`;
+        } else {
+            console.error('resultsCount element not found');
+        }
+    }
+
+    async function fetchItems(page) {
+        try {
+            const sortParam = currentSort === 'relevance' ? '' : `&sort_by=${currentSort}&sort_order=desc`;
+            const url = `https://nubis.bis-sorbonne.fr/api/items?item_set_id=${itemSetId}&page=${page}&per_page=${itemsPerPage}${sortParam}`;
+            console.log('Fetching URL:', url);
+
+            const response = await fetch(url);
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers.entries()]);
+            
+            // Récupérer le total depuis les headers
+            const total = response.headers.get('Omeka-S-Total-Results');
+            console.log('Total from headers:', total);
+            
+            if (total && page === 1) {
+                totalItems = parseInt(total);
+                console.log('Setting totalItems to:', totalItems);
+                updateResultsCount(totalItems);
+                hasMore = totalItems > itemsPerPage;
+            }
+
+            const items = await response.json();
+            console.log(`Received ${items.length} items`);
+            return items;
+        } catch (error) {
+            console.error("Erreur lors du chargement des items:", error);
+            return [];
+        }
+    }
+
+    function createItemCard(item) {
+        return `
+            <a href="/item/${item['o:id']}" class="item-card">
+                ${item['thumbnail_display_urls'] 
+                    ? `<img src="${item['thumbnail_display_urls']['medium']}" 
+                          alt="" class="item-thumbnail" loading="lazy" />`
+                    : ''}
+                <div class="item-info">
+                    <h3>${item['o:title']}</h3>
+                </div>
+            </a>
+        `;
+    }
+
+    async function loadItems(resetGrid = false) {
+        console.log('LoadItems called, resetGrid:', resetGrid);
+        console.log('Current state:', { isLoading, hasMore, currentPage });
+
+        if (isLoading || (!hasMore && !resetGrid)) return;
+        
+        const loadingEl = document.getElementById('loading');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const itemsGrid = document.getElementById('itemsGrid');
+        
+        if (!loadingEl || !loadMoreBtn || !itemsGrid) {
+            console.error('Required elements not found');
+            return;
+        }
+        
+        isLoading = true;
+        loadingEl.classList.remove('hidden');
+        loadMoreBtn.classList.add('hidden');
+
+        if (resetGrid) {
+            itemsGrid.innerHTML = '';
+            currentPage = 1;
+            hasMore = true;
+        }
+
+        const items = await fetchItems(currentPage);
+        const loadedItemsCount = currentPage * itemsPerPage;
+        
+        hasMore = loadedItemsCount < totalItems;
+        console.log('Updated hasMore:', hasMore);
+
+        const itemsHtml = items.map(createItemCard).join('');
+        itemsGrid.insertAdjacentHTML('beforeend', itemsHtml);
+        
+        currentPage++;
+        isLoading = false;
+        loadingEl.classList.add('hidden');
+        
+        if (hasMore) {
+            loadMoreBtn.classList.remove('hidden');
+        }
+    }
+
+    // Event listeners
+    document.getElementById('sortBy').addEventListener('change', (e) => {
+        console.log('Sort changed to:', e.target.value);
+        currentSort = e.target.value;
+        loadItems(true);
+    });
+
+    document.getElementById('perPage').addEventListener('change', (e) => {
+        console.log('PerPage changed to:', e.target.value);
+        itemsPerPage = parseInt(e.target.value);
+        loadItems(true);
+    });
+
+    document.getElementById('loadMoreBtn').addEventListener('click', () => {
+        console.log('LoadMore clicked');
+        loadItems();
+    });
+
+    // Initial load
+    console.log('Starting initial load');
+    loadItems();
+</script>
+
+<style is:global>
+    .collection-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .collection-controls {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .sort-control, .per-page-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .sort-select, .per-page-select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        background: white;
+    }
+
+    .collection-items {
+        padding: 2rem 1rem;
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .item-card {
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+
+    .item-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .item-thumbnail {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .item-info {
+        padding: 1rem;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+
+    .load-more-btn {
+        display: block;
+        margin: 2rem auto;
+        padding: 1rem 2rem;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .load-more-btn:hover {
+        background: #e0e0e0;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+</style>

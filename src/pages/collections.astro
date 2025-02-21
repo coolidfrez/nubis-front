@@ -1,7 +1,47 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import SearchHeader from "../components/global/SearchHeader.astro";
 import { api } from "../lib/api";
+
+const allCollections = await api.getCollections({ 'per_page': 200 });
+
 ---
 <Layout title="Collections">
-
+    <SearchHeader />
+    <section class="collections-section" id="collections">
+        <div class="content-wrapper">
+            <div class="title-box">
+                <h2 class="main-title">
+                    Explorer
+                    <span class="sub-title">les collections</span>
+                </h2>
+    
+                <nav class="collections-nav" aria-label="Collections en vedette">
+                    <ul>
+                        {allCollections && allCollections.length ? (
+                            allCollections.map((collection, index) => (
+                                <li>
+                                    <a 
+                                        href={`/collection/${collection['o:id']}`}
+                                        class="collection-link"
+                                        aria-current={index === 0 ? "page" : undefined}
+                                        data-bg-image={collection.thumbnail_display_urls?.large || ''}
+                                    >
+                                        {collection['o:title']}
+                                        {/* {collection['dcterms:description']?.[0]?.['@value'] && 
+                                            <span class="collection-description">
+                                                {collection['dcterms:description'][0]['@value']}
+                                            </span>
+                                        } */}
+                                    </a>
+                                </li>
+                            ))
+                        ) : (
+                            <li class="no-collections">Aucune collection en vedette pour le moment.</li>
+                        )}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
 </Layout>

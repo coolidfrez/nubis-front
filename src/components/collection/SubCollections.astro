@@ -1,0 +1,84 @@
+---
+// src/components/collection/SubCollections.astro
+const { subCollections } = Astro.props;
+---
+
+{subCollections?.length > 0 && (
+    <section class="sub-collections">
+        <h2>Collections liées</h2>
+        <div class="collections-grid">
+            {subCollections.map((subColl) => (
+                <a href={`/collection/${subColl['o:id']}`} class="collection-card">
+                    {subColl['thumbnail_display_urls'] && (
+                        <img 
+                            src={subColl['thumbnail_display_urls']['medium']} 
+                            alt=""
+                            class="collection-thumbnail"
+                        />
+                    )}
+                    <div class="collection-description">
+                        <h3>{subColl['o:title']}</h3>
+                        {subColl['dcterms:description']?.[0]?.['@value'] && (
+                            <p>{subColl['dcterms:description'][0]['@value']}</p>
+                        )}
+                    </div>
+                </a>
+            ))}
+        </div>
+    </section>
+)}
+
+<style>
+    .sub-collections {
+        padding: 2rem 1rem;
+    }
+
+    .collections-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .collection-card {
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+
+    .collection-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .collection-thumbnail {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .collection-description {
+        padding: 1rem;
+    }
+
+    .collection-description p {
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        margin: 0 0 0.5rem;
+    }
+</style>

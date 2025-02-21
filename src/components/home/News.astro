@@ -1,0 +1,129 @@
+---
+// src/components/home/News.astro
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const recentPosts = posts
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+    .slice(0, 4);
+---
+
+<section class="news-section" id="news">
+    <div class="content-wrapper">
+        <h2 class="section-title">
+            Actualités
+            <span class="section-subtitle">&amp; Événements</span>
+        </h2>
+        
+        <div class="news-grid">
+            {recentPosts.map((post) => (
+                <a href={`/blog/${post.slug}`} class="news-card">
+                    <div class="card-image">
+                        <img 
+                            src={post.data.imageUrl} 
+                            alt={post.data.title}
+                        />
+                    </div>
+                    <div class="card-content">
+                        <h3>{post.data.title}</h3>
+                        <p>{post.data.description}</p>
+                        <span class="read-more">EN SAVOIR +</span>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </div>
+</section>
+
+<style>
+    .news-section {
+        padding: 6rem 0;
+        background-color: #fff;
+    }
+
+    .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 4%;
+    }
+
+    .section-title {
+        text-align: center;
+    }
+
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .news-card {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        text-decoration: none;
+        color: inherit;
+        background: #f8f8f8;
+        transition: transform 0.2s ease;
+        height: 200px;
+    }
+
+    .news-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-image {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-content h3 {
+        font-size: 1.2rem;
+        margin: 0 0 1rem;
+        font-weight: bold;
+    }
+
+    .card-content p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+        flex-grow: 1;
+    }
+
+    .read-more {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #333;
+        color: white;
+        font-size: 0.8rem;
+        align-self: flex-start;
+    }
+
+    @media (max-width: 1024px) {
+        .news-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .news-card {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+
+        .card-image {
+            height: 200px;
+        }
+    }
+</style>

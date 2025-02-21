@@ -1,0 +1,118 @@
+---
+// src/pages/blog/[...slug].astro
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('blog');
+    return posts.map(post => ({
+        params: { slug: post.slug },
+        props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title}>
+    <article class="blog-post">
+        <div class="content-wrapper">
+            <header>
+                <h1>{post.data.title}</h1>
+                <div class="post-meta">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                        {new Date(post.data.pubDate).toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </time>
+                    {post.data.authors && (
+                        <div class="authors">
+                            Par {post.data.authors.join(' et ')}
+                        </div>
+                    )}
+                </div>
+            </header>
+
+            <div class="post-content">
+                <Content />
+            </div>
+        </div>
+    </article>
+</Layout>
+
+<style>
+.blog-post {
+    padding: 4rem 0;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.post-meta {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.authors {
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+figure {
+    background-color: var(--color-primary-dark-500);
+}
+/* Paragraphes */
+.post-content > :global(p) {
+    margin: 0 0 1.5rem 0;
+}
+
+/* Titres */
+.post-content > :global(h2) {
+    font-size: 1.8rem;
+    margin: 3rem 0 1.5rem 0;
+}
+
+.post-content > :global(h3) {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1.2rem 0;
+}
+
+/* Liens */
+/* .post-content > :global(a) {
+    text-decoration: none;
+} */
+
+.post-content > :global(a:hover) {
+    text-decoration: underline;
+}
+
+/* Liens externes */
+.post-content > :global(a[target="_blank"]) {
+    /* Style pour les liens externes */
+}
+
+/* Citations */
+.post-content > :global(blockquote) {
+    margin: 2rem 0;
+    padding-left: 1.5rem;
+    border-left: 4px solid #ccc;
+    font-style: italic;
+}
+
+</style>

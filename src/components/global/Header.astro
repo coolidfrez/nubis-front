@@ -1,4 +1,8 @@
 ---
+import { Image } from 'astro:assets';
+import logoImg from '../../assets/images/logo-nubis.png';
+import Logo from '../../assets/logo-nubis.svg';
+
 // Header.astro
 interface NavItem {
   href: string;
@@ -11,13 +15,18 @@ const navigationItems: NavItem[] = [
   { href: '/a-propos', label: 'À propos' },
   { href: '/contact', label: 'Contact' }
 ];
+
 ---
 
 <div class="nubis-header">
   <div class="nubis-header__content">
     <a class="nubis-header__logo-link" href="/">
-      <img src="/images/logo-nubis.png" alt="Logo Nubis" class="nubis-header__logo">
-    </a>
+      <!-- <img src="/images/logo-nubis.png" alt="Logo Nubis" class="nubis-header__logo">
+      <Image src={logoImg}
+        alt="Logo NuBIS"
+        class="nubis-header__logo"/>
+    </a> -->
+    <a class="nubis-header__logo-link" href="/"><Logo class="nubis-header__logo"/></a>
 
     <nav aria-label="Navigation principale" class="nubis-header__nav">
       <ul role="list" class="nubis-header__nav-list">
@@ -45,7 +54,7 @@ const navigationItems: NavItem[] = [
   }
 
   .nubis-header__content {
-    max-width: 1400px;
+    /* max-width: 1400px; */
     margin: 0 auto;
     padding: 0 2rem;
     display: flex;
@@ -58,7 +67,7 @@ const navigationItems: NavItem[] = [
   }
 
   .nubis-header__logo {
-    height: 50px;
+    height: 70px;
     width: auto;
   }
 

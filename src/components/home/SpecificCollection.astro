@@ -1,0 +1,134 @@
+---
+// src/components/home/SpecificCollection.astro
+import { Image } from 'astro:assets';
+// Import de l'image
+import fichierVirtuelCover from '../../assets/images/fichier-virtuel-cover.jpg';
+---
+
+<section class="collection-section">
+   <div class="content-wrapper">
+       <h2 class="section-title">
+           Fichier
+           <span class="section-subtitle">Virtuel</span>
+       </h2>
+
+       <div class="collection-display">
+           <div class="collection-image">
+            <a href="/collection/10414"><Image 
+            src={fichierVirtuelCover} 
+            alt="Fichier virtuel de la BIS"
+            width={800}  // Largeur souhaitée
+            quality={80} // Qualité de l'image (optionnel)
+             /></a>
+               <span class="image-credit">© Photo Lise Hébuterne, BIS</span>
+           </div>
+           
+           <div class="collection-info">
+               <p>Le fichier virtuel permet de consulter les fiches descriptives des documents qui ne sont pas référencés dans le catalogue informatique de la BIS et qui ont été édités entre 1801 et les années 1970.</p>
+               
+               <p>Les quelque 150 000 fiches papier qui se trouvaient auparavant dans des meubles en bois à tiroir dans les espaces de la bibliothèque ont été numérisées et sont diffusées dans 320 tiroirs virtuels qui correspondent aux tiroirs physiques. Les fiches sont classées par ordre alphabétique d'auteurs. En cas d'ouvrage anonyme (auteur inconnu) ou collectif (rédigé par plus de trois auteurs), le classement se fait au titre.</p>
+
+               <p class="warning">Attention, les fiches des documents antérieurs à 1801 ou non datés n'ont pas été numérisées et doivent être consultées dans les meubles en bois dans les espaces de la bibliothèque situés près de la salle Henri-Paul Nénot.</p>
+
+               <div class="contact-info">
+                   <p>Les documents issus de ce fichier peuvent être commandés en envoyant un courriel à l'adresse <a href="mailto:resfichier@bis-sorbonne.fr">resfichier@bis-sorbonne.fr</a>, avec les informations suivantes :</p>
+                   <ul>
+                       <li>Vos noms et prénoms</li>
+                       <li>Votre numéro de code-barre (carte BIS)</li>
+                       <li>Titre du document recherché</li>
+                       <li>Cote</li>
+                       <li>Auteur</li>
+                       <li>Année</li>
+                   </ul>
+                   <p>Il vous est également possible de nous communiquer d'autres informations, si celles-ci vous semblent utiles pour faciliter la recherche de votre document.</p>
+               </div>
+           </div>
+       </div>
+   </div>
+</section>
+
+<style>
+.collection-section {
+    padding: 4rem 0;
+    background-color: #fff;
+}
+
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 4%;
+}
+
+.collection-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-top: 2rem;
+}
+
+.collection-image {
+    position: relative;
+}
+
+.collection-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.image-credit {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+p {
+    margin-bottom: 1.5rem;
+}
+
+.warning {
+    padding: 1rem;
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    margin: 2rem 0;
+}
+
+.contact-info {
+    margin-top: 2rem;
+}
+
+.contact-info ul {
+    list-style: disc;
+    padding-left: 2rem;
+    margin: 1rem 0;
+}
+
+.contact-info li {
+    margin-bottom: 0.5rem;
+}
+
+a {
+    color: #1967d2;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .collection-display {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.5rem;
+        margin-left: 2rem;
+    }
+}
+</style>

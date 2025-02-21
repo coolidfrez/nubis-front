@@ -9,9 +9,9 @@ const defaultImage = featuredCollections[0]?.thumbnail_display_urls?.large || ''
 <section class="featured-section" data-bg-image={defaultImage} id="featured">
     <div class="content-wrapper">
         <div class="title-box">
-            <h2 class="main-title">
+            <h2 class="section-title">
                 Explorer
-                <span class="sub-title">les collections</span>
+                <span class="section-subtitle">les collections</span>
             </h2>
 
             <nav class="collections-nav" aria-label="Collections en vedette">
@@ -44,92 +44,78 @@ const defaultImage = featuredCollections[0]?.thumbnail_display_urls?.large || ''
 </section>
 
 <style>
-    .featured-section {
-        position: relative;
-        min-height: 530px;
-        width: 100%;
-        background-size: cover;
-        background-position: center;
-        transition: background-image 0.3s ease-in-out;
-    }
+.featured-section {
+    position: relative;
+    min-height: 530px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.3s ease-in-out;
+}
 
-    .content-wrapper {
-        position: relative;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 6rem 2rem 4rem;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        z-index: 2;
-    }
+.content-wrapper {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 2rem 4rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    z-index: 2;
+}
 
+.title-box {
+    background: var(--color-primary-cream-100, #fff);
+    padding: 2rem;
+    display: inline-block;
+    max-width: 700px;
+}
+
+.collections-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+}
+
+.collection-link {
+    color: var(--color-primary-dark-500, #333);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.collection-link:hover {
+    color: var(--color-primary-gold-500, #8b7355);
+}
+
+.collection-description {
+    display: block;
+    font-size: 0.9em;
+    margin-top: 0.5rem;
+    opacity: 0.8;
+}
+
+.no-collections {
+    font-style: italic;
+    color: #666;
+}
+
+@media (max-width: 768px) {
     .title-box {
-        background: var(--color-primary-cream-100, #fff);
-        padding: 2rem;
-        display: inline-block;
-        max-width: 700px;
+        max-width: 100%;
     }
-
+    
     .main-title {
-        font-size: 2.5rem;
-        line-height: 1.2;
-        margin-bottom: 2rem;
+        font-size: 2rem;
     }
 
     .sub-title {
-        display: block;
-        padding-left: 3.5rem;
-        color: var(--color-primary-gold-500, #8b7355);
-        font-size: 2rem;
-        font-style: italic;
+        font-size: 1.5rem;
     }
-
-    .collections-nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem 2rem;
-    }
-
-    .collection-link {
-        color: var(--color-primary-dark-500, #333);
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .collection-link:hover {
-        color: var(--color-primary-gold-500, #8b7355);
-    }
-
-    .collection-description {
-        display: block;
-        font-size: 0.9em;
-        margin-top: 0.5rem;
-        opacity: 0.8;
-    }
-
-    .no-collections {
-        font-style: italic;
-        color: #666;
-    }
-
-    @media (max-width: 768px) {
-        .title-box {
-            max-width: 100%;
-        }
-        
-        .main-title {
-            font-size: 2rem;
-        }
-
-        .sub-title {
-            font-size: 1.5rem;
-        }
-    }
+}
 </style>
 
 <script>

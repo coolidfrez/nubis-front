@@ -12,6 +12,7 @@
 
 body {
   font-family: var(--ff-sans);
+  font-size: var(--fs-500);
   color: var(--color-primary-dark-500);
   line-height: 1.5;
 }
@@ -27,7 +28,22 @@ img, picture, svg {
 }
 
 a {
-    transition: color 0.4s ease-in-out,
-                background-color 0.15s ease-in-out,
-                border-color 0.15s ease-in-out;
-  }
+  transition: color 0.4s ease-in-out,
+  background-color 0.15s ease-in-out,
+  border-color 0.15s ease-in-out;
+}
+
+.section-title {
+  font-size: var(--fs-900);
+  color: var(--color-primary-dark-500);
+  line-height: 1.2;
+  margin-bottom: 2rem;
+}
+
+.section-subtitle {
+  display: block;
+  padding-left: 3.5rem;
+  color: var(--color-primary-gold-500, #8b7355);
+  font-size: 2rem;
+  font-style: italic;
+}

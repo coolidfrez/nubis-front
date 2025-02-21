@@ -1,0 +1,48 @@
+---
+// src/components/blog/Figure.astro
+interface Props {
+    src: string;
+    alt: string;
+    caption?: string;
+    link?: string;
+}
+
+const { src, alt, caption, link } = Astro.props;
+---
+
+<figure>
+    <img 
+        src={src} 
+        alt={alt}
+        class="blog-image"
+    />
+    {caption && (
+        <figcaption>
+            {link ? (
+                <>
+                    {caption} <a href={link} target="_blank">En ligne sur NuBIS</a>
+                </>
+            ) : (
+                caption
+            )}
+        </figcaption>
+    )}
+</figure>
+
+<style>
+    figure {
+        margin: 2rem 0;
+    }
+
+    .blog-image {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+
+    figcaption {
+        padding: 1rem 0;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+</style>

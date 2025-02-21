@@ -1,4 +1,8 @@
-const API_BASE_URL = 'https://nubis.bis-sorbonne.fr/api';
+const API_CONFIG = {
+    BASE_URL: 'https://nubis.bis-sorbonne.fr/api',
+    KEY_IDENTITY: import.meta.env.PUBLIC_API_KEY_IDENTITY,
+    KEY_CREDENTIAL: import.meta.env.PUBLIC_API_KEY_CREDENTIAL
+};
 
 // Gestion centralisée des erreurs
 const handleAPIError = (error, context) => {
@@ -13,12 +17,13 @@ const handleAPIError = (error, context) => {
 
 export async function fetchAPI(endpoint, params = {}) {
     const queryString = new URLSearchParams(params).toString();
-    const url = `${API_BASE_URL}${endpoint}${queryString ? `?${queryString}` : ''}`;
+    const url = `${API_CONFIG.BASE_URL}${endpoint}${queryString ? `?${queryString}` : ''}`;
    
     try {
         const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Basic ${btoa(`${API_CONFIG.KEY_IDENTITY}:${API_CONFIG.KEY_CREDENTIAL}`)}`
             }
         });
        
@@ -82,7 +87,7 @@ export const api = {
             handleAPIError(error, 'getCollectionWithRelations');
         }
     },
-    
+
     // Featured Collections
     getFeaturedCollections: async () => {
         try {
@@ -128,6 +133,14 @@ export const api = {
             return await fetchAPI(`/sites/${siteId}/pages`);
         } catch (error) {
             handleAPIError(error, 'getSitePages');
+        }
+    },
+
+    getAsset: async (id) => {
+        try {
+            return await fetchAPI(`/assets/${id}`);
+        } catch (error) {
+            handleAPIError(error, 'getAsset');
         }
     }
 };

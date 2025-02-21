@@ -41,13 +41,104 @@ try {
                         <p>{item['dcterms:date'][0]['@value']}</p>
                     </div>
                 )}
-
-                {item?.['dcterms:source']?.[0]?.['@value'] && (
+            
+                {item?.['dcterms:source'] && (
                     <div class="metadata-section">
                         <h2>Source</h2>
-                        <p>{item['dcterms:source'][0]['@value']}</p>
+                        {item['dcterms:source'].map(source => (
+                            <p>
+                                {source['@value'] ? (
+                                    source['@value']
+                                ) : source['@id'] && (
+                                    <a href={source['@id']} target="_blank" rel="noopener noreferrer">
+                                        {source['o:label']}
+                                    </a>
+                                )}
+                            </p>
+                        ))}
                     </div>
                 )}
+            
+                {item?.['dcterms:creator'] && (
+                    <div class="metadata-section">
+                        <h2>Créateur</h2>
+                        {item['dcterms:creator'].map(creator => (
+                            <p>
+                                {creator['@id'] ? (
+                                    <a href={creator['@id']} target="_blank" rel="noopener noreferrer">
+                                        {creator['o:label']}
+                                    </a>
+                                ) : creator['@value']}
+                            </p>
+                        ))}
+                    </div>
+                )}
+            
+                {item?.['dcterms:type'] && (
+                    <div class="metadata-section">
+                        <h2>Type</h2>
+                        {item['dcterms:type'].map(type => (
+                            <p>{type['@value']}</p>
+                        ))}
+                    </div>
+                )}
+            
+                {item?.['dcterms:format'] && (
+                    <div class="metadata-section">
+                        <h2>Format</h2>
+                        {item['dcterms:format'].map(format => (
+                            <p>{format['@value']}</p>
+                        ))}
+                    </div>
+                )}
+            
+                {item?.['dcterms:contributor'] && (
+                    <div class="metadata-section">
+                        <h2>Contributeur</h2>
+                        {item['dcterms:contributor'].map(contributor => (
+                            <p>
+                                {contributor['@id'] ? (
+                                    <a href={contributor['@id']} target="_blank" rel="noopener noreferrer">
+                                        {contributor['o:label']}
+                                    </a>
+                                ) : contributor['@value']}
+                            </p>
+                        ))}
+                    </div>
+                )}
+                
+                {item?.['dcterms:rights'] && (
+                <div class="metadata-section">
+                    <h2>Droits</h2>
+                    {item['dcterms:rights'].map(rights => (
+                        <p>
+                            {rights['@id'] ? (
+                                <a href={rights['@id']} target="_blank" rel="noopener noreferrer">
+                                    {rights['o:label']}
+                                </a>
+                            ) : rights['@value']}
+                        </p>
+                    ))}
+                </div>
+            )}
+            
+            {item?.['dcterms:language'] && (
+                <div class="metadata-section">
+                    <h2>Langue</h2>
+                    {item['dcterms:language'].map(language => (
+                        <p>{language['@value']}</p>
+                    ))}
+                </div>
+            )}
+            
+            {item?.['dcterms:identifier'] && (
+                <div class="metadata-section">
+                    <h2>Identifiant ARK</h2>
+                    {item['dcterms:identifier'].map(identifier => (
+                        <p>{identifier['@value']}</p>
+                    ))}
+                </div>
+            )}
             </div>
         </div>
     </div>
@@ -100,6 +191,7 @@ try {
 </style>
 
 <script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script>
+<!-- <script src="https://nubis.bis-sorbonne.fr/modules/Mirador/asset/vendor/mirador/mirador-pack.min.js"></script> -->
 <script define:vars={{ manifestUrl }}>
     window.addEventListener('load', () => {
         if (typeof Mirador !== 'undefined') {

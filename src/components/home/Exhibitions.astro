@@ -1,0 +1,166 @@
+---
+// src/components/home/Exhibitions.astro
+import { api } from "../../lib/api"
+
+const EXCLUDED_SITES = [
+    'bibnum',
+    'Le_Play',
+];
+
+const allSites = await api.getSites({
+    'sort_by': 'created',
+    'sort_order': 'desc'
+});
+
+// Récupérer les sites et leurs images
+const exhibits = await Promise.all(
+    allSites
+        .filter(site => !EXCLUDED_SITES.includes(site['o:slug']))
+        .map(async (site) => {
+            if (site['o:thumbnail']?.['o:id']) {
+                const asset = await api.getAsset(site['o:thumbnail']['o:id']);
+                return {
+                    ...site,
+                    assetUrl: asset?.['o:asset_url']
+                };
+            }
+            return site;
+        })
+);
+
+// console.log('Site with asset:', exhibits[0]); // Pour debug
+---
+
+<section class="exhibits-section" id="exhibits">
+    <div class="content-wrapper">
+        <h2 class="section-title">
+            Expositions
+            <span class="section-subtitle">Virtuelles</span>
+        </h2>
+        
+        <div class="exhibits-slider">
+            <div class="exhibits-track">
+                {exhibits.map((expo) => (
+                    <div class="exhibit-card">
+                        <a href={`/s/${expo['o:slug']}`} class="exhibit-link">
+                            <div class="exhibit-image">
+                                {expo.assetUrl && (
+                                    <img 
+                                    src={expo.assetUrl}
+                                        alt={expo['o:title']}
+                                    />
+                                )}
+                            </div>
+                            <div class="exhibit-info">
+                                <h3>{expo['o:title']}</h3>
+                                {expo['o:summary'] && (
+                                    <p class="exhibit-description">{expo['o:summary']}</p>
+                                )}
+                            </div>
+                        </a>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .exhibits-section {
+        padding: 4rem 0;
+        background-color: #141414;
+        color: #fff;
+    }
+
+    .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 4%;
+    }
+
+    .section-title {
+        color: var(--color-primary-mint-500);
+    }
+
+    .exhibits-slider {
+        position: relative;
+        overflow-x: auto;
+        padding: 2rem 0;
+    }
+
+    .exhibits-track {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .exhibit-card {
+        flex: 0 0 auto;
+        width: 300px;
+        transition: transform 0.3s ease;
+    }
+
+    .exhibit-card:hover {
+        transform: scale(1.05);
+        z-index: 2;
+    }
+
+    .exhibit-image {
+        width: 100%;
+        height: 169px; /* 16:9 ratio */
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+    .exhibit-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .exhibit-card:hover .exhibit-image img {
+        transform: scale(1.1);
+    }
+
+    .exhibit-info {
+        padding: 1rem 0;
+    }
+
+    .exhibit-info h3 {
+        font-size: 1.2rem;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .exhibit-description {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .exhibit-card:hover .exhibit-description {
+        opacity: 1;
+        max-height: 100px;
+    }
+
+    /* Pour la version mobile */
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            margin-left: 2rem;
+        }
+
+        .exhibit-card {
+            width: 250px;
+        }
+    }
+</style>

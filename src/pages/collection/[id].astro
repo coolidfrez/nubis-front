@@ -2,21 +2,31 @@
 // src/pages/collection/[id].astro
 import Layout from '../../layouts/Layout.astro';
 import { api } from '../../lib/api';
+import CollectionBreadcrumb from '../../components/collection/CollectionBreadcrumb.astro';
+import CollectionInfo from '../../components/collection/CollectionInfo.astro';
+import SubCollections from '../../components/collection/SubCollections.astro';
+import ItemsGrid from '../../components/collection/ItemsGrid.astro';
 
 export const prerender = false;
 
 const { id } = Astro.params;
-let data;
+let collection;
+let items = [];
+let subCollections = [];
+let parentCollection = null;
 let error;
 
 try {
-    data = await api.getCollectionWithRelations(id);
+    // Utiliser getCollectionWithRelations pour obtenir toutes les données en une fois
+    const data = await api.getCollectionWithRelations(id);
+    
+    if (data) {
+        ({ collection, items, subCollections, parentCollection } = data);
+    }
 } catch (err) {
     error = err;
     console.error('Error loading collection:', error);
 }
-
-const { collection, items, subCollections, parentCollection } = data || {};
 ---
 
 <Layout title={collection?.['o:title'] || 'Collection'}>
@@ -27,96 +37,13 @@ const { collection, items, subCollections, parentCollection } = data || {};
         </div>
     ) : (
         <>
-            {/* Navigation hiérarchique */}
-            <nav class="collection-breadcrumb">
-                {parentCollection && (
-                    <>
-                        <a href={`/collection/${parentCollection['o:id']}`} class="parent-link">
-                            {parentCollection['thumbnail_display_urls'] && (
-                                <img 
-                                    src={parentCollection['thumbnail_display_urls']['square']} 
-                                    alt=""
-                                    class="breadcrumb-thumbnail"
-                                />
-                            )}
-                            <span>{parentCollection['o:title']}</span>
-                        </a>
-                        <span class="separator"> > </span>
-                    </>
-                )}
-                <span class="current">{collection?.['o:title']}</span>
-            </nav>
-
-            {/* Collection courante */}
-            <section class="current-collection">
-                <div class="collection-header">
-                    {collection?.['thumbnail_display_urls'] && (
-                        <div class="collection-image">
-                            <img 
-                                src={collection['thumbnail_display_urls']['large']} 
-                                alt={collection['o:title']}
-                            />
-                        </div>
-                    )}
-                    <div class="collection-info">
-                        <h1>{collection?.['o:title']}</h1>
-                        {collection?.['dcterms:description']?.[0]?.['@value'] && (
-                            <div class="description">
-                                {collection['dcterms:description'][0]['@value']}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* Sous-collections si présentes */}
-            {subCollections?.length > 0 && (
-                <section class="sub-collections">
-                    <h2>Collections liées</h2>
-                    <div class="collections-grid">
-                        {subCollections.map((subColl) => (
-                            <a href={`/collection/${subColl['o:id']}`} class="collection-card">
-                                {subColl['thumbnail_display_urls'] && (
-                                    <img 
-                                        src={subColl['thumbnail_display_urls']['medium']} 
-                                        alt=""
-                                        class="collection-thumbnail"
-                                    />
-                                )}
-                                <div class="collection-description">
-                                    <h3>{subColl['o:title']}</h3>
-                                    {subColl['dcterms:description']?.[0]?.['@value'] && (
-                                        <p>{subColl['dcterms:description'][0]['@value']}</p>
-                                    )}
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Items de la collection */}
-            {items?.length > 0 && (
-                <section class="collection-items">
-                    <h2>Documents de la collection</h2>
-                    <div class="items-grid">
-                        {items.map((item) => (
-                            <a href={`/item/${item['o:id']}`} class="item-card">
-                                {item['thumbnail_display_urls'] && (
-                                    <img 
-                                        src={item['thumbnail_display_urls']['medium']} 
-                                        alt=""
-                                        class="item-thumbnail"
-                                    />
-                                )}
-                                <div class="item-info">
-                                    <h3>{item['o:title']}</h3>
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                </section>
-            )}
+            <CollectionBreadcrumb 
+                parentCollection={parentCollection} 
+                collection={collection}
+            />
+            <CollectionInfo collection={collection} />
+            <SubCollections subCollections={subCollections} />
+            <ItemsGrid items={items} />
         </>
     )}
 </Layout>
@@ -129,80 +56,6 @@ const { collection, items, subCollections, parentCollection } = data || {};
         background-color: #fff3f3;
         border: 1px solid #ffcdd2;
         border-radius: 4px;
-    }
-
-    .collection-breadcrumb {
-        padding: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .breadcrumb-thumbnail {
-        width: 30px;
-        height: 30px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-
-    .collection-header {
-        display: flex;
-        gap: 2rem;
-        margin: 2rem 0;
-    }
-
-    .collection-image img {
-        max-width: 500px;
-        height: auto;
-        object-fit: cover;
-    }
-
-    .collections-grid, .items-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 2rem;
-        padding: 2rem;
-    }
-
-    .collection-card, .item-card {
-        text-decoration: none;
-        color: inherit;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        overflow: hidden;
-        transition: transform 0.2s ease;
-    }
-
-    .collection-card:hover, .item-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .collection-thumbnail, .item-thumbnail {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-    }
-
-    .collection-description, .item-info {
-        padding: 1rem;
-    }
-
-    .collection-description p {
-        font-size: 1rem;
-        color: #666;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    h2 {
-        margin: 2rem 0 1rem;
-        padding: 0 2rem;
-    }
-
-    h3 {
-        margin: 0 0 0.5rem;
+        text-align: center;
     }
 </style>

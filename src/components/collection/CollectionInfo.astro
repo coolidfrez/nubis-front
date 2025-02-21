@@ -1,0 +1,56 @@
+---
+// src/components/collection/CollectionInfo.astro
+const { collection } = Astro.props;
+---
+
+<section class="current-collection">
+    <div class="collection-header">
+        {collection?.['thumbnail_display_urls'] && (
+            <div class="collection-image">
+                <img 
+                    src={collection['thumbnail_display_urls']['large']} 
+                    alt={collection['o:title']}
+                />
+            </div>
+        )}
+        <div class="collection-info">
+            <h1>{collection?.['o:title']}</h1>
+            {collection?.['dcterms:description']?.[0]?.['@value'] && (
+                <div class="description">
+                    {collection['dcterms:description'][0]['@value']}
+                </div>
+            )}
+        </div>
+    </div>
+</section>
+
+<style>
+    .collection-header {
+        display: flex;
+        gap: 2rem;
+        margin: 2rem 0;
+        padding: 0 1rem;
+    }
+
+    .collection-image img {
+        max-width: 500px;
+        height: auto;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .collection-info {
+        flex: 1;
+    }
+
+    .description {
+        margin-top: 1rem;
+        line-height: 1.5;
+        color: #666;
+    }
+
+    h1 {
+        margin: 0;
+        line-height: 1.2;
+    }
+</style>

@@ -1,0 +1,72 @@
+---
+// src/components/collection/ItemsGrid.astro
+const { items } = Astro.props;
+---
+
+{items?.length > 0 && (
+    <section class="collection-items">
+        <h2>Documents de la collection</h2>
+        <div class="items-grid">
+            {items.map((item) => (
+                <a href={`/item/${item['o:id']}`} class="item-card">
+                    {item['thumbnail_display_urls'] && (
+                        <img 
+                            src={item['thumbnail_display_urls']['medium']} 
+                            alt=""
+                            class="item-thumbnail"
+                        />
+                    )}
+                    <div class="item-info">
+                        <h3>{item['o:title']}</h3>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </section>
+)}
+
+<style>
+    .collection-items {
+        padding: 2rem 1rem;
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .item-card {
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+
+    .item-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .item-thumbnail {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .item-info {
+        padding: 1rem;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+</style>
