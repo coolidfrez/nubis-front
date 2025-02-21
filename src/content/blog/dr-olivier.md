@@ -2,7 +2,7 @@
 title: "Dr Olivier, éphémère star du web !"
 description: "L'analyse des statistiques de fréquentation de NuBIS en 2023 révèle une découverte inattendue..."
 pubDate: 2024-02-19
-imageUrl: "../images/blog/dr-olivier.jpg"
+image: "../images/blog/dr-olivier.jpg"
 authors: ["Gilles Clément", "Cécile Obligi"]
 ---
 
