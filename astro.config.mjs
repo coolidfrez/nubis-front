@@ -14,6 +14,5 @@ export default defineConfig({
 
   // output: 'server',
   integrations: [mdx()],
-
   adapter: netlify(),
 });
